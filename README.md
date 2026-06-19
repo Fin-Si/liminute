@@ -21,9 +21,9 @@ It can sit in a corner as a minimal clock, open into a comfortable control panel
 
 ## Why Liminute
 
-- **A visual threshold.** Focus opens on Motion 6; breaks move to Motion 1. Each phase has its own liminal atmosphere from the first launch.
+- **A visual threshold.** Each phase has its own liminal atmosphere from the first launch.
 - **As small as you need it.** Switch between Mini, Compact, and Expanded without disturbing a running or paused session.
-- **A background that feels like yours.** Explore the Liminute Collection or import a photo, GIF, APNG, or video.
+- **A background that feels like yours.** Explore the Liminute Collection or import your own photo, GIF, APNG, or video.
 - **Built for Windows, not a browser tab.** Pin it above other windows, start it with Windows, close it to the tray, and trust the native timer through sleep and restarts.
 
 ## One timer, three levels of attention
@@ -42,7 +42,7 @@ Choose the length of focus, short break, and long break phases. Liminute can sta
 
 ## The Liminute Collection
 
-The built-in collection is the visual heart of Liminute: looping hallways, unfamiliar rooms, quiet landscapes, and places that feel suspended between destinations. Motion 6 is the default focus space and Motion 1 is the default break space.
+The built-in collection is the visual heart of Liminute: looping hallways, unfamiliar rooms, quiet landscapes, and places that feel suspended between destinations.
 
 Appearance uses the same Mini, Compact, and Expanded component as the real widget. Change the preview size or phase without resizing the live timer, then choose a background and see the result immediately.
 
