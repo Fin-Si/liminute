@@ -1,0 +1,61 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Liminute",
+  "version": "0.4.0",
+  "identifier": "com.simon.cozypomodoro",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "Liminute",
+        "width": 340,
+        "height": 210,
+        "resizable": false,
+        "decorations": false,
+        "transparent": false,
+        "backgroundColor": "#4E6161",
+        "shadow": true,
+        "center": true
+      },
+      {
+        "label": "settings",
+        "title": "Liminute — Settings",
+        "url": "index.html",
+        "width": 840,
+        "height": 700,
+        "minWidth": 720,
+        "minHeight": 620,
+        "visible": false,
+        "resizable": true,
+        "decorations": true,
+        "transparent": false,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null,
+      "assetProtocol": { "enable": true, "scope": ["$APPDATA/**"] }
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "createUpdaterArtifacts": false,
+    "externalBin": ["binaries/ffmpeg"],
+    "resources": ["resources/FFMPEG-NOTICE.txt"],
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.ico"],
+    "windows": {
+      "nsis": {
+        "installerIcon": "icons/icon.ico",
+        "displayLanguageSelector": false,
+        "languages": ["English", "Russian"]
+      }
+    }
+  }
+}

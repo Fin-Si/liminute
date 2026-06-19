@@ -1,0 +1,14 @@
+FFmpeg sidecar notice
+
+Liminute bundles FFmpeg 7.1 essentials_build from www.gyan.dev, obtained through
+imageio-ffmpeg 0.6.0. The executable is a separate sidecar process and is licensed
+under GPL version 3 or later. FFmpeg is a trademark of Fabrice Bellard, originator
+of the FFmpeg project.
+
+License: https://www.gnu.org/licenses/gpl-3.0.txt
+FFmpeg source for this release: https://ffmpeg.org/releases/ffmpeg-7.1.tar.xz
+Build information: run `ffmpeg -version` on the bundled executable.
+Bundled executable SHA-256: 2CE797A0F88D7F067180338FB227F7B1928EA727BD9A4D7A1D022F7C52AF71A3
+
+When publishing a binary release, attach the corresponding FFmpeg source archive
+to the same GitHub Release so recipients can obtain the complete corresponding source.

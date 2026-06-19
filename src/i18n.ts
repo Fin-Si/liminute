@@ -1,0 +1,48 @@
+import type { Locale, Phase } from "./types";
+
+const messages = {
+  ru: {
+    focus: "Фокус", shortBreak: "Перерыв", longBreak: "Длинный перерыв",
+    start: "Старт", pause: "Пауза", resume: "Продолжить", skip: "Пропустить", reset: "Сбросить",
+    today: "Сегодня", cycles: "циклов", tasks: "Задачи", addTask: "Добавить задачу",
+    newTask: "Что хотите сделать?", emptyTasks: "Можно работать и без списка — таймер всё равно считает фокус.",
+    settings: "Настройки", appearance: "Внешний вид", timer: "Таймер", sounds: "Звуки", general: "Общие",
+    focusTime: "Фокус", shortBreakTime: "Короткий отдых", longBreakTime: "Длинный отдых",
+    longAfter: "Длинный отдых после", autoBreak: "Автозапуск отдыха", autoFocus: "Автозапуск фокуса",
+    language: "Язык", autostart: "Запускать вместе с Windows", startMinimized: "Запускать в трее",
+    scenes: "Анимированные сцены", focusBackground: "Во время фокуса", breakBackground: "Во время отдыха",
+    shuffle: "Менять сцену между фазами", motion: "Включить анимацию", overlay: "Затемнение фона",
+    panelOpacity: "Прозрачность панелей", scale: "Размер таймера", corners: "Скругление окна",
+    sound: "Сигнал завершения", volume: "Громкость", preview: "Прослушать", import: "Импортировать файл",
+    focusCompleteSound: "Окончание фокуса", focusStartSound: "Начало фокуса", soundHint: "Выберите разные сигналы для перехода к отдыху и возвращения к работе.",
+    primary: "Основной", converting: "Подготавливаем фон", imageMotion: "Дыхание изображения", motionScale: "Масштаб", motionSpeed: "Скорость", motionDrift: "Смещение",
+    back: "Назад к таймеру", save: "Сохранено автоматически", pin: "Закрепить поверх окон",
+    mini: "Мини", compact: "Компакт", expanded: "Список", estimate: "Оценка", done: "Готово",
+    windowSize: "Размер виджета", windowSizeHint: "Выберите готовый размер — окно не растягивается вручную.",
+    focusHint: "Один спокойный шаг за раз", breakHint: "Можно выдохнуть", awaiting: "Готовы продолжить?",
+  },
+  en: {
+    focus: "Focus", shortBreak: "Break", longBreak: "Long break",
+    start: "Start", pause: "Pause", resume: "Resume", skip: "Skip", reset: "Reset",
+    today: "Today", cycles: "cycles", tasks: "Tasks", addTask: "Add task",
+    newTask: "What do you want to do?", emptyTasks: "The list is optional — the timer still tracks your focus.",
+    settings: "Settings", appearance: "Appearance", timer: "Timer", sounds: "Sounds", general: "General",
+    focusTime: "Focus", shortBreakTime: "Short break", longBreakTime: "Long break",
+    longAfter: "Long break after", autoBreak: "Auto-start breaks", autoFocus: "Auto-start focus",
+    language: "Language", autostart: "Launch with Windows", startMinimized: "Start in tray",
+    scenes: "Animated scenes", focusBackground: "During focus", breakBackground: "During breaks",
+    shuffle: "Change scene between phases", motion: "Enable animation", overlay: "Background dimming",
+    panelOpacity: "Panel opacity", scale: "Timer size", corners: "Window rounding",
+    sound: "Completion sound", volume: "Volume", preview: "Preview", import: "Import file",
+    focusCompleteSound: "Focus completed", focusStartSound: "Focus starts", soundHint: "Choose separate cues for starting a break and returning to focus.",
+    primary: "Primary", converting: "Preparing background", imageMotion: "Image breathing", motionScale: "Scale", motionSpeed: "Speed", motionDrift: "Drift",
+    back: "Back to timer", save: "Saved automatically", pin: "Keep above other windows",
+    mini: "Mini", compact: "Compact", expanded: "Tasks", estimate: "Estimate", done: "Done",
+    windowSize: "Widget size", windowSizeHint: "Choose a preset — the window does not resize freely.",
+    focusHint: "One calm step at a time", breakHint: "Time to breathe", awaiting: "Ready to continue?",
+  },
+} as const;
+
+export type MessageKey = keyof typeof messages.ru;
+export const t = (locale: Locale, key: MessageKey) => messages[locale][key];
+export const phaseLabel = (locale: Locale, phase: Phase) => t(locale, phase);
