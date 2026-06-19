@@ -11,7 +11,7 @@
 - Seven normalized WebM loops originate from `Backs/proccesed/liminute_1.mp4` through `liminute_7.mp4`.
 - Thirteen normalized WebP images originate from `Backs/pics/`.
 - Original GIF duplicates are not distributed.
-- Author/source/license metadata for several files is not present locally. These assets may be used for local development, but public distribution must wait until the project owner confirms redistribution rights and supplies author/source/license details.
+- On June 19, 2026, the project owner confirmed that these source files are free, public, and permitted for redistribution in Liminute. Direct author/source URLs are not present in the local asset package and should be added when available.
 
 ## Existing project scenes
 

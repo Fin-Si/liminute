@@ -91,4 +91,8 @@ Liminute is local-first. Tasks, focus history, settings, and imported background
 
 Read [THIRD_PARTY_ASSETS.md](THIRD_PARTY_ASSETS.md) before distributing a build. FFmpeg licensing and source-distribution requirements are documented in [src-tauri/resources/FFMPEG-NOTICE.txt](src-tauri/resources/FFMPEG-NOTICE.txt).
 
-Some bundled background files still need confirmed author and redistribution details before a public release can be published.
+The project owner has confirmed that the bundled backgrounds are free, public, and permitted for redistribution. Add direct author and source URLs to the asset registry when they become available.
+
+## License
+
+Liminute source code is available under the [MIT License](LICENSE). Bundled third-party components and media remain subject to their own licenses.
