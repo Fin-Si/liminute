@@ -9,13 +9,10 @@
 ## Bundled Liminute backgrounds
 
 - Seven normalized WebM loops originate from `Backs/proccesed/liminute_1.mp4` through `liminute_7.mp4`.
+- Seven small WebP gallery posters are derived from those WebM loops.
 - Thirteen normalized WebP images originate from `Backs/pics/`.
 - Original GIF duplicates are not distributed.
 - On June 19, 2026, the project owner confirmed that these source files are free, public, and permitted for redistribution in Liminute. Direct author/source URLs are not present in the local asset package and should be added when available.
-
-## Existing project scenes
-
-`Rainy study` and `Morning lake` were created for this project with OpenAI image generation. The remaining classic scenes use original project CSS shapes and animations.
 
 ## Sounds
 

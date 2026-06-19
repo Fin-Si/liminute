@@ -29,6 +29,14 @@
 
 ## Future reusable skill candidate
 
+## Release 0.4.2 lessons
+
+- A clean-install locale must come from the active system locale, not a hard-coded settings default. Map `ru-*` to Russian and use English as the safe fallback; never replace a persisted user language.
+- Background defaults belong in both native and browser backends. Missing legacy scene selections migrate to Motion 6 for Focus and Motion 1 for Break, while any existing imported or Liminute path remains untouched.
+- The Appearance preview must render the same presentation component as the native widget. A local preview-mode override may scale Mini, Compact, or Expanded visually, but must not call the backend or mutate the real window mode.
+- Avoid nested scroll regions in settings galleries. Let the settings content own scrolling, and theme both `scrollbar-color` and WebKit scrollbar parts so Windows does not inject a visually unrelated white track.
+- For destructive clean-install QA, atomically move the entire app-data directory on the same volume, hash the moved files before testing, and restore it in `finally`. Do not use wildcard copies as the safety boundary.
+
 ## Release 0.4.1 showcase lessons
 
 - Native WebView screenshots can be captured without exposing the desktop by launching the release build with a temporary WebView2 remote-debugging port and using CDP `Page.captureScreenshot`. Use deterministic demo data only after a verified backup, then restore before any installer smoke test.

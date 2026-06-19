@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Liminute",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "identifier": "com.simon.cozypomodoro",
   "build": {
     "beforeDevCommand": "npm run dev",

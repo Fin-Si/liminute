@@ -4,6 +4,8 @@ import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
 import { createInitialTimer, durationFor, nextPhase, shouldRefreshTimerDuration } from "../timerCore";
 import { DEFAULT_SETTINGS, type FocusSession, type Settings, type Task, type TimerState, type WindowMode } from "../types";
+import { browserLocale } from "../locale";
+import { withLiminuteBackgroundDefaults } from "../settingsDefaults";
 
 export interface AppSnapshot {
   timer: TimerState;
@@ -22,7 +24,8 @@ class BrowserBackend {
   private lastTick = Date.now();
 
   constructor() {
-    const storedSettings = this.read<Partial<Settings>>("settings", {});
+    const hasStoredSettings = localStorage.getItem("cozy:settings") !== null;
+    let storedSettings = this.read<Partial<Settings>>("settings", {});
     const legacy = storedSettings as Partial<Settings> & { breakCompleteSound?: string; breakCompleteCustomPath?: string | null };
     if (!storedSettings.focusStartSound && legacy.breakCompleteSound) {
       storedSettings.focusStartSound = legacy.breakCompleteSound.replace("break-complete", "focus-start");
@@ -34,6 +37,8 @@ class BrowserBackend {
     if (storedSettings.focusStartSound === "focus-start-1" && !storedSettings.focusStartCustomPath) storedSettings.focusStartSound = "focus-start-2";
     if (storedSettings.focusCustomBackground && !storedSettings.focusCustomBackgroundId) storedSettings.focusCustomBackgroundId = `legacy:${storedSettings.focusCustomBackground}`;
     if (storedSettings.breakCustomBackground && !storedSettings.breakCustomBackgroundId) storedSettings.breakCustomBackgroundId = `legacy:${storedSettings.breakCustomBackground}`;
+    storedSettings = withLiminuteBackgroundDefaults(storedSettings);
+    if (!hasStoredSettings) storedSettings.locale = browserLocale();
     const settings = { ...DEFAULT_SETTINGS, ...storedSettings };
     this.sessions = this.read<FocusSession[]>("sessions", []);
     const storedTimer = this.read<TimerState | null>("timer", null);
@@ -108,14 +113,6 @@ class BrowserBackend {
     const auto = phase === "focus" ? this.snapshot.settings.autoStartFocus : this.snapshot.settings.autoStartBreaks;
     const duration = durationFor(phase, this.snapshot.settings);
     Object.assign(timer, { phase, status: auto ? "running" : "awaiting", deadline: auto ? now + duration : null, remainingMs: duration, phaseDurationMs: duration });
-    if (this.snapshot.settings.shuffleScenes) {
-      const scenes = phase === "focus" ? this.snapshot.settings.focusScenes : this.snapshot.settings.breakScenes;
-      if (scenes.length) {
-        const picked = scenes[Math.floor(now / 1000) % scenes.length];
-        if (phase === "focus") this.snapshot.settings.focusScene = picked;
-        else this.snapshot.settings.breakScene = picked;
-      }
-    }
     this.snapshot.todaySessions = this.countToday();
     playCompletionSound(this.snapshot.settings, completedFocus ? "focus" : "break");
     this.emit();

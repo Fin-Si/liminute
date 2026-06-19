@@ -2,6 +2,10 @@ import type { Locale, Phase } from "./types";
 
 const messages = {
   ru: {
+    livePreview: "Предпросмотр виджета", livePreviewHint: "Точный вид окна с текущим фоном и настройками.", previewPhase: "Фаза предпросмотра", previewSize: "Размер предпросмотра",
+    liminuteCollection: "Liminute Collection", collectionHint: "Лиминальные пространства для перехода между фокусом и отдыхом.",
+    imageMotionHint: "Добавляет статичному изображению медленное дыхание. Настройки сохраняются отдельно для каждого фона.",
+    visualTuning: "Вид и читаемость", visualTuningHint: "Настройте затемнение, прозрачность панелей, размер таймера и цвета.",
     focus: "Фокус", shortBreak: "Перерыв", longBreak: "Длинный перерыв",
     start: "Старт", pause: "Пауза", resume: "Продолжить", skip: "Пропустить", reset: "Сбросить",
     today: "Сегодня", cycles: "циклов", tasks: "Задачи", addTask: "Добавить задачу",
@@ -22,6 +26,10 @@ const messages = {
     focusHint: "Один спокойный шаг за раз", breakHint: "Можно выдохнуть", awaiting: "Готовы продолжить?",
   },
   en: {
+    livePreview: "Widget preview", livePreviewHint: "The exact window shape with your current background and settings.", previewPhase: "Preview phase", previewSize: "Preview size",
+    liminuteCollection: "Liminute Collection", collectionHint: "Liminal spaces for the threshold between focus and rest.",
+    imageMotionHint: "Gives a still image a slow breathing motion. Each background keeps its own settings.",
+    visualTuning: "Look and legibility", visualTuningHint: "Tune dimming, panel opacity, timer scale, and colors.",
     focus: "Focus", shortBreak: "Break", longBreak: "Long break",
     start: "Start", pause: "Pause", resume: "Resume", skip: "Skip", reset: "Reset",
     today: "Today", cycles: "cycles", tasks: "Tasks", addTask: "Add task",

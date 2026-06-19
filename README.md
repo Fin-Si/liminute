@@ -1,8 +1,8 @@
 <div align="center">
   <img src="public/brand/liminute-logo.png" width="104" alt="Liminute logo">
   <h1>Liminute</h1>
-  <p><strong>A quiet Pomodoro timer that feels at home on your desktop.</strong></p>
-  <p>Stay with one task, keep the timer close, and make the space around it your own.</p>
+  <p><strong>A liminal-space Pomodoro timer for Windows.</strong></p>
+  <p>Turn the minutes between starting and stopping into a place you want to return to.</p>
 
   <a href="https://github.com/Fin-Si/liminute/releases/latest"><img src="https://img.shields.io/badge/Windows-10%20%7C%2011-527070?style=flat-square&logo=windows&logoColor=white" alt="Windows 10 and 11"></a>
   <a href="https://github.com/Fin-Si/liminute/releases/latest"><img src="https://img.shields.io/github/v/release/Fin-Si/liminute?style=flat-square&color=E0B978" alt="Latest release"></a>
@@ -15,13 +15,15 @@
 
 ![Liminute running in Mini, Compact, and Expanded modes](docs/screenshots/hero.png)
 
-Liminute is a small, native focus timer for Windows. It can sit in a corner as a minimal clock, open into a comfortable control panel, or expand into a task list when you need a little more structure. Your timer, tasks, history, settings, and imported media stay on your computer.
+Liminute pairs a native Pomodoro timer with empty corridors, quiet rooms, distant lights, and other liminal spaces. The background is not decoration added after the timer; it is the atmosphere that separates focused work from a break.
+
+It can sit in a corner as a minimal clock, open into a comfortable control panel, or expand into a task list when you need more structure. Your timer, tasks, history, settings, and imported media stay on your computer.
 
 ## Why Liminute
 
-- **Calm by design.** Soft colors, restrained controls, and no account, feed, or streak pressure.
+- **A visual threshold.** Focus opens on Motion 6; breaks move to Motion 1. Each phase has its own liminal atmosphere from the first launch.
 - **As small as you need it.** Switch between Mini, Compact, and Expanded without disturbing a running or paused session.
-- **A background that feels like yours.** Use the included liminal scenes or import a photo, GIF, APNG, or video.
+- **A background that feels like yours.** Explore the Liminute Collection or import a photo, GIF, APNG, or video.
 - **Built for Windows, not a browser tab.** Pin it above other windows, start it with Windows, close it to the tray, and trust the native timer through sleep and restarts.
 
 ## One timer, three levels of attention
@@ -38,11 +40,19 @@ Choose the length of focus, short break, and long break phases. Liminute can sta
 
 ![Timer settings with focus and break durations and automatic transitions](docs/screenshots/settings-timer.png)
 
-## Make the background part of the ritual
+## The Liminute Collection
 
-Pick from the built-in Liminute collection or import your own image or video. Background dimming and panel opacity keep the timer readable. Static images can use a gentle breathing effect, with separate controls for scale, cycle speed, and drift saved for each image.
+The built-in collection is the visual heart of Liminute: looping hallways, unfamiliar rooms, quiet landscapes, and places that feel suspended between destinations. Motion 6 is the default focus space and Motion 1 is the default break space.
 
-![Appearance settings showing the background library and image breathing controls](docs/screenshots/settings-appearance.png)
+Appearance uses the same Mini, Compact, and Expanded component as the real widget. Change the preview size or phase without resizing the live timer, then choose a background and see the result immediately.
+
+![Appearance settings with the real Compact widget preview and Liminute Collection](docs/screenshots/settings-appearance.png)
+
+## Give still images a little life
+
+Static backgrounds can breathe slowly instead of sitting completely still. Scale controls the depth of the movement, Speed sets the length of the cycle, and Drift adds a small directional shift. Every image remembers its own profile, and reduced-motion preferences disable the effect automatically.
+
+![Per-image breathing and legibility controls in Liminute](docs/screenshots/settings-appearance-motion.png)
 
 Liminute includes its own media adapter. Photos are normalized to compact WebP files; GIF, APNG, and video are converted to silent VP9 WebM at up to 30 FPS. The original file is never changed, and every background fills Mini, Compact, and Expanded while preserving its proportions.
 
@@ -54,7 +64,7 @@ Focus completion and focus start have separate sound choices. Preview a cue befo
 
 ## Fits into Windows quietly
 
-Choose a fixed window preset, switch between English and Russian, launch Liminute with Windows, start it in the tray, or keep it above other windows.
+Choose a fixed window preset, switch between English and Russian, launch Liminute with Windows, start it in the tray, or keep it above other windows. A clean installation follows the Windows UI language: Russian for `ru-*`, English everywhere else.
 
 ![General settings with window presets, language, autostart, tray startup, and Pin](docs/screenshots/settings-general.png)
 
@@ -65,7 +75,7 @@ Liminute has no account and does not upload your activity. Tasks and focus histo
 ## Install
 
 1. Open the [latest release](https://github.com/Fin-Si/liminute/releases/latest).
-2. Download `Liminute_0.4.1_x64-setup.exe`.
+2. Download `Liminute_0.4.2_x64-setup.exe`.
 3. Run the installer and open **Liminute** from the desktop or Start menu.
 
 The current build is unsigned, so Windows SmartScreen may ask for confirmation. This is expected for a small open-source project without a commercial code-signing certificate.
@@ -113,5 +123,5 @@ Release checks also cover all three window modes, English and Russian, Pin, clos
 Liminute source code is available under the [MIT License](LICENSE). Bundled media and third-party components remain subject to their own terms; details are recorded in [THIRD_PARTY_ASSETS.md](THIRD_PARTY_ASSETS.md) and the [FFmpeg notice](src-tauri/resources/FFMPEG-NOTICE.txt).
 
 <div align="center">
-  <sub>Made by FinSi for quieter minutes.</sub>
+  <sub>Made by FinSi for the space between focus and rest.</sub>
 </div>

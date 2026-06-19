@@ -92,15 +92,17 @@ impl Default for BackgroundMotionProfile {
 impl Default for Settings {
     fn default() -> Self {
         Self {
-            locale: "ru".into(), focus_minutes: 25, short_break_minutes: 5,
+            locale: "en".into(), focus_minutes: 25, short_break_minutes: 5,
             long_break_minutes: 15, long_break_every: 4, auto_start_breaks: false,
             auto_start_focus: false, autostart: false, start_minimized: false,
             pinned: false, window_mode: "compact".into(),
             focus_scenes: vec!["rainy-room".into(), "forest".into(), "night-city".into(), "pixel-night".into()],
             break_scenes: vec!["ember".into(), "ocean".into(), "aurora".into(), "sunrise".into()],
             focus_scene: "rainy-room".into(), break_scene: "ember".into(), shuffle_scenes: false,
-            focus_custom_background: None, break_custom_background: None,
-            focus_custom_background_id: None, break_custom_background_id: None,
+            focus_custom_background: Some("/backgrounds/liminute/motion-06.webm".into()),
+            break_custom_background: Some("/backgrounds/liminute/motion-01.webm".into()),
+            focus_custom_background_id: Some("liminute-motion-6".into()),
+            break_custom_background_id: Some("liminute-motion-1".into()),
             background_motion_profiles: HashMap::new(),
             animations_enabled: true, overlay: 0.36, text_color: "#F6EAD2".into(),
             accent_color: "#EAD0A0".into(), font_scale: 1.0, radius: 24,
@@ -182,6 +184,21 @@ struct AppState {
 
 fn now_ms() -> i64 {
     SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_default().as_millis() as i64
+}
+
+fn locale_from_tag(tag: Option<&str>) -> String {
+    if tag.is_some_and(|value| value.to_ascii_lowercase().starts_with("ru")) { "ru".into() } else { "en".into() }
+}
+
+fn ensure_liminute_background_defaults(settings: &mut Settings) {
+    if settings.focus_custom_background.is_none() {
+        settings.focus_custom_background = Some("/backgrounds/liminute/motion-06.webm".into());
+        settings.focus_custom_background_id = Some("liminute-motion-6".into());
+    }
+    if settings.break_custom_background.is_none() {
+        settings.break_custom_background = Some("/backgrounds/liminute/motion-01.webm".into());
+        settings.break_custom_background_id = Some("liminute-motion-1".into());
+    }
 }
 
 fn duration_for(phase: &str, settings: &Settings) -> i64 {
@@ -290,13 +307,6 @@ fn next_after_completion(data: &mut RuntimeData, now: i64, allow_auto: bool) -> 
     data.timer.deadline = if auto { Some(now + duration) } else { None };
     data.timer.remaining_ms = duration;
     data.timer.phase_duration_ms = duration;
-    if data.settings.shuffle_scenes {
-        let scenes = if next == "focus" { &data.settings.focus_scenes } else { &data.settings.break_scenes };
-        if !scenes.is_empty() {
-            let chosen = scenes[((now / 1000).unsigned_abs() as usize) % scenes.len()].clone();
-            if next == "focus" { data.settings.focus_scene = chosen; } else { data.settings.break_scene = chosen; }
-        }
-    }
     session
 }
 
@@ -571,7 +581,12 @@ pub fn run() {
             let db_path = data_dir.join("cozy.db");
             let (tasks, sessions) = initialize_database(&db_path).map_err(std::io::Error::other)?;
             let persisted: Option<PersistedState> = fs::read(&state_path).ok().and_then(|bytes| serde_json::from_slice(&bytes).ok());
+            let is_fresh_install = persisted.is_none();
             let mut settings = persisted.as_ref().map(|p| p.settings.clone()).unwrap_or_default();
+            if is_fresh_install {
+                let detected_locale = sys_locale::get_locale();
+                settings.locale = locale_from_tag(detected_locale.as_deref());
+            }
             if settings.focus_start_sound.starts_with("break-complete-") {
                 settings.focus_start_sound = settings.focus_start_sound.replace("break-complete-", "focus-start-");
             }
@@ -585,6 +600,7 @@ pub fn run() {
             if settings.break_custom_background_id.is_none() {
                 if let Some(path) = &settings.break_custom_background { settings.break_custom_background_id = Some(format!("legacy:{path}")); }
             }
+            ensure_liminute_background_defaults(&mut settings);
             let timer = persisted.map(|p| p.timer).unwrap_or_else(|| initial_timer(&settings));
             let pinned = settings.pinned;
             let start_minimized = settings.start_minimized;
@@ -731,5 +747,35 @@ mod tests {
         assert_eq!(data.timer.remaining_ms, 612_345);
         assert_eq!(data.timer.phase_duration_ms, 1_500_000);
         assert_eq!(data.timer.deadline, None);
+    }
+
+    #[test]
+    fn system_locale_uses_russian_only_for_russian_tags() {
+        assert_eq!(locale_from_tag(Some("ru-RU")), "ru");
+        assert_eq!(locale_from_tag(Some("en-US")), "en");
+        assert_eq!(locale_from_tag(Some("de-DE")), "en");
+        assert_eq!(locale_from_tag(None), "en");
+    }
+
+    #[test]
+    fn missing_classic_backgrounds_migrate_to_liminute_defaults() {
+        let mut settings = Settings::default();
+        settings.focus_custom_background = None;
+        settings.focus_custom_background_id = None;
+        settings.break_custom_background = None;
+        settings.break_custom_background_id = None;
+        ensure_liminute_background_defaults(&mut settings);
+        assert_eq!(settings.focus_custom_background_id.as_deref(), Some("liminute-motion-6"));
+        assert_eq!(settings.break_custom_background_id.as_deref(), Some("liminute-motion-1"));
+    }
+
+    #[test]
+    fn imported_backgrounds_survive_default_migration() {
+        let mut settings = Settings::default();
+        settings.focus_custom_background = Some("C:\\media\\focus.webm".into());
+        settings.focus_custom_background_id = Some("imported-focus".into());
+        ensure_liminute_background_defaults(&mut settings);
+        assert_eq!(settings.focus_custom_background_id.as_deref(), Some("imported-focus"));
+        assert_eq!(settings.focus_custom_background.as_deref(), Some("C:\\media\\focus.webm"));
     }
 }

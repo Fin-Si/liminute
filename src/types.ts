@@ -100,7 +100,7 @@ export interface Settings {
 }
 
 export const DEFAULT_SETTINGS: Settings = {
-  locale: "ru",
+  locale: "en",
   focusMinutes: 25,
   shortBreakMinutes: 5,
   longBreakMinutes: 15,
@@ -115,10 +115,10 @@ export const DEFAULT_SETTINGS: Settings = {
   breakScenes: ["ember", "ocean", "aurora", "sunrise"],
   focusScene: "rainy-room",
   breakScene: "ember",
-  focusCustomBackground: null,
-  breakCustomBackground: null,
-  focusCustomBackgroundId: null,
-  breakCustomBackgroundId: null,
+  focusCustomBackground: "/backgrounds/liminute/motion-06.webm",
+  breakCustomBackground: "/backgrounds/liminute/motion-01.webm",
+  focusCustomBackgroundId: "liminute-motion-6",
+  breakCustomBackgroundId: "liminute-motion-1",
   backgroundMotionProfiles: {},
   shuffleScenes: false,
   animationsEnabled: true,

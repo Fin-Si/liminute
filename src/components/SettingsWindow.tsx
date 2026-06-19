@@ -4,8 +4,9 @@ import type { AppSnapshot } from "../lib/bridge";
 import { backend, playCompletionSound } from "../lib/bridge";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";
 import { t } from "../i18n";
-import { DEFAULT_MOTION_PROFILE, type Settings } from "../types";
-import { LIMINUTE_BACKGROUNDS, SceneBackground, SCENES } from "./SceneBackground";
+import { DEFAULT_MOTION_PROFILE, type Settings, type WindowMode } from "../types";
+import { LIMINUTE_BACKGROUNDS } from "./SceneBackground";
+import TimerSurface from "./TimerSurface";
 
 type Section = "timer" | "appearance" | "sounds" | "general";
 
@@ -17,7 +18,10 @@ export default function SettingsWindow({ snapshot }: { snapshot: AppSnapshot }) 
 
   useEffect(() => {
     document.documentElement.style.setProperty("--accent", settings.accentColor);
-  }, [settings.accentColor]);
+    document.documentElement.style.setProperty("--text-color", settings.textColor);
+    document.documentElement.style.setProperty("--panel-opacity", `${settings.panelOpacity}`);
+    document.documentElement.style.setProperty("--font-scale", `${settings.fontScale}`);
+  }, [settings.accentColor, settings.textColor, settings.panelOpacity, settings.fontScale]);
 
   const tabs: { id: Section; icon: typeof Clock3; label: Parameters<typeof t>[1] }[] = [
     { id: "timer", icon: Clock3, label: "timer" },
@@ -37,7 +41,7 @@ export default function SettingsWindow({ snapshot }: { snapshot: AppSnapshot }) 
       <section className="settings-content">
         <header><div><p>{t(locale, "settings")}</p><h1>{t(locale, tabs.find((tab) => tab.id === section)!.label)}</h1></div><span className="save-state">● {t(locale, "save")}</span></header>
         {section === "timer" && <TimerSettings settings={settings} update={update} />}
-        {section === "appearance" && <AppearanceSettings settings={settings} update={update} />}
+        {section === "appearance" && <AppearanceSettings snapshot={snapshot} update={update} />}
         {section === "sounds" && <SoundSettings settings={settings} update={update} />}
         {section === "general" && <GeneralSettings settings={settings} update={update} />}
       </section>
@@ -64,10 +68,11 @@ function TimerSettings({ settings, update }: SettingsProps) {
   </div>;
 }
 
-function AppearanceSettings({ settings, update }: SettingsProps) {
+function AppearanceSettings({ snapshot, update }: { snapshot: AppSnapshot; update: (patch: Partial<Settings>) => void }) {
+  const settings = snapshot.settings;
   const l = settings.locale;
   const [previewPhase, setPreviewPhase] = useState<"focus" | "break">("focus");
-  const scene = previewPhase === "focus" ? settings.focusScene : settings.breakScene;
+  const [previewMode, setPreviewMode] = useState<WindowMode>(settings.windowMode);
   const customBackground = previewPhase === "focus" ? settings.focusCustomBackground : settings.breakCustomBackground;
   const customBackgroundId = previewPhase === "focus" ? settings.focusCustomBackgroundId : settings.breakCustomBackgroundId;
   const motion = customBackgroundId ? settings.backgroundMotionProfiles[customBackgroundId] ?? DEFAULT_MOTION_PROFILE : DEFAULT_MOTION_PROFILE;
@@ -101,36 +106,51 @@ function AppearanceSettings({ settings, update }: SettingsProps) {
     if (!customBackgroundId) return;
     update({ backgroundMotionProfiles: { ...settings.backgroundMotionProfiles, [customBackgroundId]: { ...motion, ...patch } } });
   };
+  const previewSize = previewMode === "mini" ? { width: 260, height: 126, scale: 1.35 } : previewMode === "compact" ? { width: 340, height: 210, scale: 1.12 } : { width: 420, height: 580, scale: 0.68 };
   return <div className="appearance-layout">
-    <div className="settings-preview">
-      <SceneBackground scene={scene} animated={settings.animationsEnabled} overlay={settings.overlay} customUrl={customBackground} motion={motion} />
-      <div className="preview-content"><span>{previewPhase === "focus" ? t(l, "focus") : t(l, "shortBreak")}</span><strong>{previewPhase === "focus" ? "24:38" : "04:21"}</strong><button><Play size={14} fill="currentColor" />{t(l, "start")}</button></div>
-      <div className="preview-toggle"><button className={previewPhase === "focus" ? "is-active" : ""} onClick={() => setPreviewPhase("focus")}>{t(l, "focus")}</button><button className={previewPhase === "break" ? "is-active" : ""} onClick={() => setPreviewPhase("break")}>{t(l, "shortBreak")}</button></div>
-    </div>
-    <div className="settings-card">
-      <h2><Sparkles size={17} /> {t(l, "scenes")}</h2>
+    <section className="appearance-preview-card settings-card">
+      <div className="appearance-section-heading"><div><h2>{t(l, "livePreview")}</h2><p>{t(l, "livePreviewHint")}</p></div><div className="phase-switch" aria-label={t(l, "previewPhase")}><button className={previewPhase === "focus" ? "is-active" : ""} onClick={() => setPreviewPhase("focus")}>{t(l, "focus")}</button><button className={previewPhase === "break" ? "is-active" : ""} onClick={() => setPreviewPhase("break")}>{t(l, "shortBreak")}</button></div></div>
+      <div className="preview-mode-switch" aria-label={t(l, "previewSize")}>
+        {(["mini", "compact", "expanded"] as WindowMode[]).map((mode) => <button key={mode} className={previewMode === mode ? "is-active" : ""} onClick={() => setPreviewMode(mode)}><span>{t(l, mode)}</span><small>{mode === "mini" ? "260 × 126" : mode === "compact" ? "340 × 210" : "420 × 580"}</small></button>)}
+      </div>
+      <div className={`widget-preview-canvas is-${previewMode}`} style={{ height: previewSize.height * previewSize.scale + 34 }}>
+        <div className="widget-preview-viewport" style={{ width: previewSize.width * previewSize.scale, height: previewSize.height * previewSize.scale }}>
+          <div className="widget-preview-scale" style={{ width: previewSize.width, height: previewSize.height, transform: `scale(${previewSize.scale})` }}>
+            <TimerSurface snapshot={snapshot} mode={previewMode} phase={previewPhase === "focus" ? "focus" : "shortBreak"} interactive={false} />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section className="settings-card collection-card">
+      <div className="appearance-section-heading"><div><h2><Sparkles size={17} /> {t(l, "liminuteCollection")}</h2><p>{t(l, "collectionHint")}</p></div></div>
       <label className="field-label">{t(l, previewPhase === "focus" ? "focusBackground" : "breakBackground")}</label>
-      <div className="scene-section-label">Liminute collection</div>
-      <div className="scene-grid scene-grid--collection">{LIMINUTE_BACKGROUNDS.map((item) => <button key={item.id} className={customBackgroundId === item.id ? "is-active" : ""} onClick={() => chooseBuiltin(item)}><span className={item.mediaType === "video" ? "is-video" : ""} style={item.mediaType === "image" ? { background: `center / cover url(${item.path})` } : undefined}>{item.mediaType === "video" ? "▶" : null}</span><small>{item.name.replace("Liminute ", "")}</small></button>)}</div>
-      <details className="legacy-scenes"><summary>Classic scenes</summary><div className="scene-grid">{SCENES.map((item) => <button key={item.id} className={!customBackground && scene === item.id ? "is-active" : ""} onClick={() => update(previewPhase === "focus" ? { focusScene: item.id, focusCustomBackground: null, focusCustomBackgroundId: null } : { breakScene: item.id, breakCustomBackground: null, breakCustomBackgroundId: null })}><span style={{ background: item.art ? `center / cover url(${item.art})` : item.palette }} /><small>{item.name}</small></button>)}</div></details>
-      <button className="import-button" disabled={importing} onClick={importBackground}>{importing ? `${t(l, "converting")} ${progress}%` : t(l, "import")}</button>
+      <div className="scene-grid scene-grid--collection">{LIMINUTE_BACKGROUNDS.map((item) => <button key={item.id} className={customBackgroundId === item.id ? "is-active" : ""} onClick={() => chooseBuiltin(item)} aria-label={item.name}><span className={item.mediaType === "video" ? "is-video" : ""} style={{ backgroundImage: `url(${item.poster})` }}>{item.mediaType === "video" ? <i><Play size={13} fill="currentColor" /></i> : null}</span><small>{item.name}</small></button>)}</div>
+      <div className="collection-actions">
+        <button className="import-button" disabled={importing} onClick={importBackground}>{importing ? `${t(l, "converting")} ${progress}%` : t(l, "import")}</button>
+        <Toggle label={t(l, "motion")} checked={settings.animationsEnabled} onChange={(animationsEnabled) => update({ animationsEnabled })} />
+      </div>
       {importError && <p className="import-error" role="alert">{importError}</p>}
-      <Toggle label={t(l, "shuffle")} checked={settings.shuffleScenes} onChange={(shuffleScenes) => update({ shuffleScenes })} />
-      <Toggle label={t(l, "motion")} checked={settings.animationsEnabled} onChange={(animationsEnabled) => update({ animationsEnabled })} />
-    </div>
-    {isStatic && customBackgroundId && <div className="settings-card range-card motion-card">
-      <h2><Sparkles size={17} />{t(l, "imageMotion")}</h2>
-      <Toggle label={t(l, "imageMotion")} checked={motion.enabled} onChange={(enabled) => updateMotion({ enabled })} />
-      <RangeField label={t(l, "motionScale")} value={motion.scale} min={0} max={0.1} step={0.005} displayValue={`${Math.round(motion.scale * 100)}%`} onChange={(scale) => updateMotion({ scale })} />
-      <RangeField label={t(l, "motionSpeed")} value={motion.speed} min={6} max={30} step={1} displayValue={`${motion.speed}s`} onChange={(speed) => updateMotion({ speed })} />
-      <RangeField label={t(l, "motionDrift")} value={motion.drift} min={0} max={0.05} step={0.005} displayValue={`${Math.round(motion.drift * 100)}%`} onChange={(drift) => updateMotion({ drift })} />
-    </div>}
-    <div className="settings-card range-card">
-      <RangeField label={t(l, "overlay")} value={settings.overlay} min={0} max={0.75} step={0.01} onChange={(overlay) => update({ overlay })} />
-      <RangeField label={t(l, "panelOpacity")} value={settings.panelOpacity} min={0.05} max={0.65} step={0.01} onChange={(panelOpacity) => update({ panelOpacity })} />
-      <RangeField label={t(l, "scale")} value={settings.fontScale} min={0.8} max={1.25} step={0.01} onChange={(fontScale) => update({ fontScale })} />
-      <div className="color-row"><label>{l === "ru" ? "Акцент" : "Accent"}<input type="color" value={settings.accentColor} onChange={(e) => update({ accentColor: e.target.value })} /></label><label>{l === "ru" ? "Текст" : "Text"}<input type="color" value={settings.textColor} onChange={(e) => update({ textColor: e.target.value })} /></label></div>
-    </div>
+    </section>
+
+    <section className={`customization-grid ${isStatic && customBackgroundId ? "has-motion" : ""}`}>
+      {isStatic && customBackgroundId && <div className="settings-card range-card motion-card">
+        <h2><Sparkles size={17} />{t(l, "imageMotion")}</h2>
+        <p className="card-description">{t(l, "imageMotionHint")}</p>
+        <Toggle label={t(l, "imageMotion")} checked={motion.enabled} onChange={(enabled) => updateMotion({ enabled })} />
+        <RangeField label={t(l, "motionScale")} value={motion.scale} min={0} max={0.1} step={0.005} displayValue={`${Math.round(motion.scale * 100)}%`} onChange={(scale) => updateMotion({ scale })} />
+        <RangeField label={t(l, "motionSpeed")} value={motion.speed} min={6} max={30} step={1} displayValue={`${motion.speed}s`} onChange={(speed) => updateMotion({ speed })} />
+        <RangeField label={t(l, "motionDrift")} value={motion.drift} min={0} max={0.05} step={0.005} displayValue={`${Math.round(motion.drift * 100)}%`} onChange={(drift) => updateMotion({ drift })} />
+      </div>}
+      <div className="settings-card range-card visual-card">
+        <h2>{t(l, "visualTuning")}</h2>
+        <p className="card-description">{t(l, "visualTuningHint")}</p>
+        <RangeField label={t(l, "overlay")} value={settings.overlay} min={0} max={0.75} step={0.01} onChange={(overlay) => update({ overlay })} />
+        <RangeField label={t(l, "panelOpacity")} value={settings.panelOpacity} min={0.05} max={0.65} step={0.01} onChange={(panelOpacity) => update({ panelOpacity })} />
+        <RangeField label={t(l, "scale")} value={settings.fontScale} min={0.8} max={1.25} step={0.01} onChange={(fontScale) => update({ fontScale })} />
+        <div className="color-row"><label>{l === "ru" ? "Акцент" : "Accent"}<input type="color" value={settings.accentColor} onChange={(e) => update({ accentColor: e.target.value })} /></label><label>{l === "ru" ? "Текст" : "Text"}<input type="color" value={settings.textColor} onChange={(e) => update({ textColor: e.target.value })} /></label></div>
+      </div>
+    </section>
   </div>;
 }
 
@@ -178,7 +198,19 @@ function GeneralSettings({ settings, update }: SettingsProps) {
     { id: "compact", label: "compact", size: "340 × 210" },
     { id: "expanded", label: "expanded", size: "420 × 580" },
   ];
-  return <div className="settings-stack"><div className="settings-card"><h2>{t(l, "windowSize")}</h2><p className="card-description">{t(l, "windowSizeHint")}</p><div className="preset-grid">{presets.map((preset) => <button key={preset.id} className={settings.windowMode === preset.id ? "is-active" : ""} onClick={() => backend.setMode(preset.id)}><i className={`preset-shape preset-shape--${preset.id}`} /><strong>{t(l, preset.label)}</strong><small>{preset.size}</small></button>)}</div></div><div className="settings-card compact-card"><div className="select-row"><label>{t(l, "language")}</label><select value={settings.locale} onChange={(event) => update({ locale: event.target.value as Settings["locale"] })}><option value="ru">Русский</option><option value="en">English</option></select></div><Toggle label={t(l, "autostart")} checked={settings.autostart} onChange={(autostart) => update({ autostart })} /><Toggle label={t(l, "startMinimized")} checked={settings.startMinimized} onChange={(startMinimized) => update({ startMinimized })} /><Toggle label={t(l, "pin")} checked={settings.pinned} onChange={(pinned) => backend.setPin(pinned)} /></div><div className="about-card"><span><img src="/brand/liminute-logo.png" alt="" /></span><div><strong>Liminute</strong><p>by FinSi · Version 0.4.1 · Local-first</p></div></div></div>;
+  return <div className="settings-stack">
+    <div className="settings-card">
+      <h2>{t(l, "windowSize")}</h2><p className="card-description">{t(l, "windowSizeHint")}</p>
+      <div className="preset-grid">{presets.map((preset) => <button key={preset.id} className={settings.windowMode === preset.id ? "is-active" : ""} onClick={() => backend.setMode(preset.id)}><i className={`preset-shape preset-shape--${preset.id}`} /><strong>{t(l, preset.label)}</strong><small>{preset.size}</small></button>)}</div>
+    </div>
+    <div className="settings-card compact-card">
+      <div className="select-row"><label>{t(l, "language")}</label><select value={settings.locale} onChange={(event) => update({ locale: event.target.value as Settings["locale"] })}><option value="ru">Русский</option><option value="en">English</option></select></div>
+      <Toggle label={t(l, "autostart")} checked={settings.autostart} onChange={(autostart) => update({ autostart })} />
+      <Toggle label={t(l, "startMinimized")} checked={settings.startMinimized} onChange={(startMinimized) => update({ startMinimized })} />
+      <Toggle label={t(l, "pin")} checked={settings.pinned} onChange={(pinned) => backend.setPin(pinned)} />
+    </div>
+    <div className="about-card"><span><img src="/brand/liminute-logo.png" alt="" /></span><div><strong>Liminute</strong><p>by FinSi · Version 0.4.2 · Local-first</p></div></div>
+  </div>;
 }
 
 interface SettingsProps { settings: Settings; update: (patch: Partial<Settings>) => void }

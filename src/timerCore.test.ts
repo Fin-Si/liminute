@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { DEFAULT_SETTINGS } from "./types";
 import { createInitialTimer, durationFor, formatTime, nextPhase, shouldRefreshTimerDuration } from "./timerCore";
+import { localeFromTags } from "./locale";
+import { withLiminuteBackgroundDefaults } from "./settingsDefaults";
 
 describe("timer core", () => {
   it("uses the configured durations", () => {
@@ -38,5 +40,27 @@ describe("timer core", () => {
     expect(shouldRefreshTimerDuration("awaiting", "shortBreak", { shortBreakMinutes: 8 })).toBe(true);
     expect(shouldRefreshTimerDuration("idle", "focus", { shortBreakMinutes: 8 })).toBe(false);
     expect(shouldRefreshTimerDuration("idle", "focus", { pinned: true })).toBe(false);
+  });
+
+  it("uses Russian only for a Russian system locale", () => {
+    expect(localeFromTags(["ru-RU", "en-US"])).toBe("ru");
+    expect(localeFromTags(["en-US"])).toBe("en");
+    expect(localeFromTags(["de-DE"])).toBe("en");
+    expect(localeFromTags(undefined)).toBe("en");
+  });
+
+  it("uses Motion 6 and Motion 1 when legacy backgrounds are absent", () => {
+    const migrated = withLiminuteBackgroundDefaults({ focusCustomBackground: null, breakCustomBackground: null });
+    expect(migrated.focusCustomBackgroundId).toBe("liminute-motion-6");
+    expect(migrated.breakCustomBackgroundId).toBe("liminute-motion-1");
+  });
+
+  it("preserves imported and existing Liminute backgrounds", () => {
+    const migrated = withLiminuteBackgroundDefaults({
+      focusCustomBackground: "C:\\media\\focus.webm", focusCustomBackgroundId: "imported-focus",
+      breakCustomBackground: "/backgrounds/liminute/motion-04.webm", breakCustomBackgroundId: "liminute-motion-4",
+    });
+    expect(migrated.focusCustomBackgroundId).toBe("imported-focus");
+    expect(migrated.breakCustomBackgroundId).toBe("liminute-motion-4");
   });
 });
