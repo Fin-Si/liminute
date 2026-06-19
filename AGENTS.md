@@ -29,6 +29,13 @@
 
 ## Future reusable skill candidate
 
+## Release 0.4.1 showcase lessons
+
+- Native WebView screenshots can be captured without exposing the desktop by launching the release build with a temporary WebView2 remote-debugging port and using CDP `Page.captureScreenshot`. Use deterministic demo data only after a verified backup, then restore before any installer smoke test.
+- Never combine `Copy-Item -LiteralPath` with a wildcard when backing up app data: the wildcard is treated literally. Copy directory contents with `-Path`, assert that the backup contains the expected files, and compare relative-path hashes before deleting or replacing anything.
+- Validate a restored backup before mutating the live app-data directory. A backup workflow must fail closed when the backup is empty or incomplete.
+- Verify Windows branding from the installed artifact, not only source PNGs: extract the associated icon from the installed EXE and inspect the desktop and Start-menu shortcut targets after the NSIS install.
+
 ## Release 0.4.0 lessons
 
 - Generic settings patches must never refresh `paused` or `running` timers. Recompute an inactive timer only when the duration of its current phase actually changed; Pin, window mode, sound and appearance updates must preserve all timer fields.
