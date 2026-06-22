@@ -204,7 +204,7 @@ function GeneralSettings({ settings, update }: SettingsProps) {
       <div className="preset-grid">{presets.map((preset) => <button key={preset.id} className={settings.windowMode === preset.id ? "is-active" : ""} onClick={() => backend.setMode(preset.id)}><i className={`preset-shape preset-shape--${preset.id}`} /><strong>{t(l, preset.label)}</strong><small>{preset.size}</small></button>)}</div>
     </div>
     <div className="settings-card compact-card">
-      <div className="select-row"><label>{t(l, "language")}</label><select value={settings.locale} onChange={(event) => update({ locale: event.target.value as Settings["locale"] })}><option value="ru">Русский</option><option value="en">English</option></select></div>
+      <div className="select-row"><label>{t(l, "language")}</label><select value={settings.locale} onChange={(event) => update({ locale: event.target.value as Settings["locale"] })}><option value="ru">Русский</option><option value="en">English</option><option value="zh">中文</option><option value="es">Español</option><option value="fr">Français</option><option value="de">Deutsch</option><option value="ja">日本語</option><option value="pt">Português</option><option value="ko">한국어</option><option value="it">Italiano</option><option value="pl">Polski</option><option value="nl">Nederlands</option></select></div>
       <Toggle label={t(l, "autostart")} checked={settings.autostart} onChange={(autostart) => update({ autostart })} />
       <Toggle label={t(l, "startMinimized")} checked={settings.startMinimized} onChange={(startMinimized) => update({ startMinimized })} />
       <Toggle label={t(l, "pin")} checked={settings.pinned} onChange={(pinned) => backend.setPin(pinned)} />

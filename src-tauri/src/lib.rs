@@ -206,7 +206,24 @@ fn now_ms() -> i64 {
 }
 
 fn locale_from_tag(tag: Option<&str>) -> String {
-    if tag.is_some_and(|value| value.to_ascii_lowercase().starts_with("ru")) { "ru".into() } else { "en".into() }
+    match tag {
+        Some(value) => {
+            let t = value.to_ascii_lowercase();
+            if t.starts_with("ru") { "ru".into() }
+            else if t.starts_with("zh") { "zh".into() }
+            else if t.starts_with("es") { "es".into() }
+            else if t.starts_with("fr") { "fr".into() }
+            else if t.starts_with("de") { "de".into() }
+            else if t.starts_with("ja") { "ja".into() }
+            else if t.starts_with("pt") { "pt".into() }
+            else if t.starts_with("ko") { "ko".into() }
+            else if t.starts_with("it") { "it".into() }
+            else if t.starts_with("pl") { "pl".into() }
+            else if t.starts_with("nl") { "nl".into() }
+            else { "en".into() }
+        }
+        None => "en".into(),
+    }
 }
 
 fn ensure_liminute_background_defaults(settings: &mut Settings) {
@@ -771,10 +788,13 @@ mod tests {
     }
 
     #[test]
-    fn system_locale_uses_russian_only_for_russian_tags() {
+    fn system_locale_uses_correct_language() {
         assert_eq!(locale_from_tag(Some("ru-RU")), "ru");
         assert_eq!(locale_from_tag(Some("en-US")), "en");
-        assert_eq!(locale_from_tag(Some("de-DE")), "en");
+        assert_eq!(locale_from_tag(Some("de-DE")), "de");
+        assert_eq!(locale_from_tag(Some("zh-CN")), "zh");
+        assert_eq!(locale_from_tag(Some("fr-FR")), "fr");
+        assert_eq!(locale_from_tag(Some("ja-JP")), "ja");
         assert_eq!(locale_from_tag(None), "en");
     }
 

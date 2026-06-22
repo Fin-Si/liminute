@@ -1,7 +1,7 @@
 export type Phase = "focus" | "shortBreak" | "longBreak";
 export type TimerStatus = "idle" | "running" | "paused" | "awaiting";
 export type WindowMode = "mini" | "compact" | "expanded";
-export type Locale = "ru" | "en";
+export type Locale = "ru" | "en" | "zh" | "es" | "fr" | "de" | "ja" | "pt" | "ko" | "it" | "pl" | "nl";
 export type SceneId = "rainy-room" | "ember" | "forest" | "night-city" | "ocean" | "aurora" | "pixel-night" | "sunrise";
 
 export interface TimerState {

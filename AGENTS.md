@@ -29,6 +29,14 @@
 
 ## Future reusable skill candidate
 
+## Release 0.4.4 — i18n: 12 languages
+
+- Added 10 new locales: Chinese (zh), Spanish (es), French (fr), German (de), Japanese (ja), Portuguese (pt), Korean (ko), Italian (it), Polish (pl), Dutch (nl).
+- Updated `localeFromTags` (TS) and `locale_from_tag` (Rust) to detect all 12 languages from system locale on first install.
+- All 72 UI strings translated across every locale (same keyset as ru/en).
+- The Settings General tab shows all 12 languages with native autonyms.
+- First-install auto-detect still preserves persisted user choice — changing language in settings overrides system detection permanently.
+
 ## Release 0.4.3 — notification fix
 
 - Windows toast notifications inherit the icon and title from the AppUserModelID registered at install time. If the `identifier` in `tauri.conf.json` changes (e.g. from `com.simon.cozypomodoro` to `com.simon.liminute`), the installed build must be **reinstalled via the NSIS installer** — replacing the `.exe` alone does not update the Windows registration.
