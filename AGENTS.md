@@ -29,6 +29,12 @@
 
 ## Future reusable skill candidate
 
+## Release 0.4.3 — notification fix
+
+- Windows toast notifications inherit the icon and title from the AppUserModelID registered at install time. If the `identifier` in `tauri.conf.json` changes (e.g. from `com.simon.cozypomodoro` to `com.simon.liminute`), the installed build must be **reinstalled via the NSIS installer** — replacing the `.exe` alone does not update the Windows registration.
+- Call `SetCurrentProcessExplicitAppUserModelID` (WinAPI) in `setup()` before `fs::create_dir_all` to assert the app identity early. Without this, a reinstall may still show the old icon until the OS cache is cleared.
+- The function uses `extern "system"` FFI with a UTF-16 null-terminated string, gated behind `#[cfg(target_os = "windows")]`.
+
 ## Release 0.4.2 lessons
 
 - A clean-install locale must come from the active system locale, not a hard-coded settings default. Map `ru-*` to Russian and use English as the safe fallback; never replace a persisted user language.

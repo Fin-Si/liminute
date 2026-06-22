@@ -19,6 +19,25 @@ use tauri_plugin_notification::NotificationExt;
 use tauri_plugin_shell::ShellExt;
 use uuid::Uuid;
 
+#[cfg(target_os = "windows")]
+fn set_windows_app_user_model_id() {
+    use std::ffi::OsStr;
+    use std::os::windows::ffi::OsStrExt;
+
+    let app_id: Vec<u16> = OsStr::new("com.simon.liminute")
+        .encode_wide()
+        .chain(std::iter::once(0))
+        .collect();
+
+    extern "system" {
+        fn SetCurrentProcessExplicitAppUserModelID(appID: *const u16) -> i32;
+    }
+
+    unsafe {
+        SetCurrentProcessExplicitAppUserModelID(app_id.as_ptr());
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct TimerState {
@@ -576,6 +595,8 @@ pub fn run() {
         .plugin(tauri_plugin_autostart::init(tauri_plugin_autostart::MacosLauncher::LaunchAgent, None))
         .setup(|app| {
             let data_dir = app.path().app_data_dir()?;
+            #[cfg(target_os = "windows")]
+            set_windows_app_user_model_id();
             fs::create_dir_all(&data_dir)?;
             let state_path = data_dir.join("state.json");
             let db_path = data_dir.join("cozy.db");
